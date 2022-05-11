@@ -153,27 +153,33 @@ const VideoPlayer = ({streamUrl, buffer, downloadProgress, downloadSpeed, poster
                     backgroundColor: COLORS.transparentBlack,
                 }}
             >
-                <View 
-                    style={{
-                        flex: 1,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Text>
-                        {
-                            downloadProgress.current == "100%" && streamUrl ? (
-                                "Downloaded :D"
-                            ) : streamUrl && buffernotice.current == 100 ? (
-                                `${downloadProgressnotice.current || "0%"} Downloaded (${downloadSpeednotice.current || "0Kb/s"})`
-                            ) : !streamUrl && buffernotice.current < 100 && buffernotice.current ? (
-                                `${buffernotice.current || "0"}% Buffered (${downloadSpeednotice.current || "0Kb/s"})`
-                            ) : (
-                                "Connecting To Peers..."
-                            )
-                        }
-                    </Text>
-                </View>
+                <MediaControls.Toolbar>
+                    <View 
+                        style={{
+                            flex: 1,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Text
+                            style={{
+                                color: COLORS.white,
+                            }}
+                        >
+                            {
+                                downloadProgress.current == "100%" && streamUrl ? (
+                                    "Downloaded :D"
+                                ) : streamUrl && buffernotice.current == 100 ? (
+                                    `${downloadProgressnotice.current || "0%"} Downloaded (${downloadSpeednotice.current || "0Kb/s"})`
+                                ) : !streamUrl && buffernotice.current < 100 && buffernotice.current ? (
+                                    `${buffernotice.current || "0"}% Buffered (${downloadSpeednotice.current || "0Kb/s"})`
+                                ) : (
+                                    "Connecting To Peers..."
+                                )
+                            }
+                        </Text>
+                    </View>
+                </MediaControls.Toolbar>
             </MediaControls>
         </View>
 

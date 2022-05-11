@@ -51,14 +51,14 @@ const MovieDetail = ({navigation, route}) => {
     const [relatedMovies, setRelatedMovies] = useState([])
     const [isPlaying, setIsPlaying] = useState(false)
 
-    BackHandler.addEventListener('hardwareBackPress', hardwareBackPress);
-    TorrentStreamer.addEventListener('error', onError)
-    TorrentStreamer.addEventListener('status', x => onStatus(x))
-    TorrentStreamer.addEventListener('ready', x => onReady(x))
-    TorrentStreamer.addEventListener('stop', x => onStop(x))
 
     useEffect(() => {
         if(userData === null && movie.length === 0) {
+            BackHandler.addEventListener('hardwareBackPress', hardwareBackPress);
+            TorrentStreamer.addEventListener('error', onError)
+            TorrentStreamer.addEventListener('status', x => onStatus(x))
+            TorrentStreamer.addEventListener('ready', x => onReady(x))
+            TorrentStreamer.addEventListener('stop', x => onStop(x))
             getMovieData(id, type)
             getUserData()
         }
@@ -140,12 +140,10 @@ const MovieDetail = ({navigation, route}) => {
     function onStatus({progress, buffer, downloadSpeed, seeds}){
         if(!streamUrl){
             setBuffer(buffer)
-        }else if(streamUrl && buffer != 100){
+        }else if(buffer != 100){
             setBuffer(100)
         }
-        if(streamUrl){
-            setDownloadProgress(`${Math.ceil(parseFloat(progress))}%`)
-        }
+        setDownloadProgress(`${Math.ceil(parseFloat(progress))}%`)
         downloadSpeed = downloadSpeed / 1024;
         if(downloadSpeed < 1000){
             setDownloadSpeed(`${downloadSpeed.toFixed(2)} Kb/s`)
