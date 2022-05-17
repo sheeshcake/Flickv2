@@ -39,7 +39,7 @@ const MiniTitle = ({data}) => {
                     color: COLORS.white,
                     paddingBottom: 5,
                 }}
-            >{data.title}</Text>
+            >{data.title || data.name}</Text>
             <CategoryAndRatings data={data} />
         </View>
         

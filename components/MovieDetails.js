@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import React, {useEffect, useState, useRef} from 'react'
+import { View, Text, TouchableOpacity, ToastAndroid } from 'react-native'
+import React, {useEffect, useState} from 'react'
 import ProgressBar from './ProgressBar'
 import { FONTS, COLORS, SIZES } from '../constants'
 import { Picker } from '@react-native-picker/picker'
@@ -10,6 +10,7 @@ const MovieDetails = ({data, isPlaying, stream, stopMovie, playMovie}) => {
     const [movieData, setMovieData] = useState([])
     const [ytsData, setYtsData] = useState([])
     const [url, setUrl] = useState(0)
+    let tries = 0;
 
     useEffect(() => {
     }, [stream])
@@ -30,7 +31,11 @@ const MovieDetails = ({data, isPlaying, stream, stopMovie, playMovie}) => {
             setYtsData(response.data.movie.torrents)
             setUrl(response.data.movie.torrents[0].url)
         }catch(e){
-            getTorrentData(data)
+            if(tries < 3){
+                ToastAndroid.show('Server Error Trying again..', ToastAndroid.SHORT);
+                tries++;
+                getTorrentData(data)
+            }
         }
 
     }

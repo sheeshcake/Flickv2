@@ -1,6 +1,7 @@
 const tmdb_api = "https://api.themoviedb.org/3/";
 const api_key = "7070e2fe1f83238edc3ada49acb2cb25";
-const yts_api = "https://yts.mx/api/v2/movie_details.json?imdb_id=";;
+const yts_api = "https://yts.mx/api/v2/movie_details.json?imdb_id=";
+const popcorntime = "https://popcorn-time.ga/";
 const poster_api = [
     {
         "size": 92,
@@ -114,5 +115,6 @@ export default {
     api_key,
     poster_api,
     backdrop_api,
-    yts_api
+    yts_api,
+    popcorntime
 }

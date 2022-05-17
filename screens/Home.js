@@ -4,7 +4,6 @@ import Hero from '../components/Hero'
 import { api, SIZES, COLORS } from '../constants'
 import PageInicator from '../components/PageInicator'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Tabs from '../navigation/Tabs'
 import HomeHeader from '../components/HomeHeader'
 import MovieHorizontal from '../components/MovieHorizontal'
 
@@ -16,7 +15,8 @@ const Home = ({navigation}) => {
     useEffect(() => {
         console.log("starting")
         getUserData()
-        getHeroMovies()
+        getMovies()
+        getTVShows()
     }, [])
     const getUserData = async () => {
         try {
@@ -30,7 +30,7 @@ const Home = ({navigation}) => {
     }
 
 
-    const getHeroMovies = async () => {
+    const getMovies = async () => {
         let temp = [...movies];
         const hero = await fetch(`${api.tmdb_api}discover/movie?api_key=${api.api_key}&language=${userData?.language || 'en-US'}&page=1`)
         data = await hero.json()
@@ -43,8 +43,43 @@ const Home = ({navigation}) => {
         const action = await fetch(`${api.tmdb_api}discover/movie?api_key=${api.api_key}&with_genres=28&language=${userData?.language || 'en-US'}&page=2`)
         data = await action.json()
         temp["action"] = data.results;
+        ///////////////////////////////
+        const horror = await fetch(`${api.tmdb_api}discover/movie?api_key=${api.api_key}&with_genres=27&language=${userData?.language || 'en-US'}`)
+        data = await horror.json()
+        temp["horror"] = data.results;
+        ///////////////////////////////
+        const romance = await fetch(`${api.tmdb_api}discover/movie?api_key=${api.api_key}&with_genres=10749&language=${userData?.language || 'en-US'}`)
+        data = await romance.json()
+        temp["romance"] = data.results;
         setMovies(temp)
+        console.log("Movies Loaded!")
     }
+
+    const getTVShows = async () => {
+        let temp = [...movies];
+        const hero = await fetch(`${api.tmdb_api}discover/tv?api_key=${api.api_key}&language=${userData?.language || 'en-US'}&page=1`)
+        data = await hero.json()
+        temp["hero"] = data.results;
+        ///////////////////////////////
+        const latest = await fetch(`${api.tmdb_api}tv/top_rated?api_key=${api.api_key}&language=${userData?.language || 'en-US'}&page=1`)
+        data = await latest.json()
+        temp["latest"] = data.results;
+        ///////////////////////////////
+        const action = await fetch(`${api.tmdb_api}discover/tv?api_key=${api.api_key}&with_genres=28&language=${userData?.language || 'en-US'}&page=2`)
+        data = await action.json()
+        temp["action"] = data.results;
+        ///////////////////////////////
+        const horror = await fetch(`${api.tmdb_api}discover/tv?api_key=${api.api_key}&with_genres=27&language=${userData?.language || 'en-US'}`)
+        data = await horror.json()
+        temp["horror"] = data.results;
+        ///////////////////////////////
+        const romance = await fetch(`${api.tmdb_api}discover/tv?api_key=${api.api_key}&with_genres=10749&language=${userData?.language || 'en-US'}`)
+        data = await romance.json()
+        temp["romance"] = data.results;
+        setTvShows(temp)
+        console.log("Movies Loaded!")
+    }
+
   return (
         <View
             style={{
@@ -59,10 +94,55 @@ const Home = ({navigation}) => {
                     backgroundColor: COLORS.black
                 }}
             >
+            <View
+                style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginTop: 20
+                }}
+            >
+                <Text
+                    style={{
+                        fontSize: SIZES.h1,
+                        color: COLORS.white,
+                        fontWeight: 'bold',
+                        marginTop: SIZES.base
+                    }}
+                >
+                    Movies
+                </Text>
+            </View>
             <Hero navigation={navigation} data={movies?.hero} pageIndicatorX={pageIndicatorX} type={'movie'}/>
             <PageInicator data={movies?.hero} pageIndicatorX={pageIndicatorX} type={"movie"}/>
             <MovieHorizontal navigation={navigation} data={movies?.latest} label={"Top Rated"}  type={"movie"}/>
             <MovieHorizontal navigation={navigation} data={movies?.action} label={"Action"} type={"movie"}/>
+            <MovieHorizontal navigation={navigation} data={movies?.horror} label={"Horror"} type={"movie"}/>
+            <MovieHorizontal navigation={navigation} data={movies?.romance} label={"Romance"} type={"movie"}/>
+
+            <View
+                style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginTop: 20
+                }}
+            >
+                <Text
+                    style={{
+                        fontSize: SIZES.h1,
+                        color: COLORS.white,
+                        fontWeight: 'bold',
+                        marginTop: SIZES.base
+                    }}
+                >
+                    TV Shows
+                </Text>
+            </View>
+            <Hero navigation={navigation} data={tvshows?.hero} pageIndicatorX={pageIndicatorX} type={'tv'}/>
+            <PageInicator data={tvshows?.hero} pageIndicatorX={pageIndicatorX} type={"tv"}/>
+            <MovieHorizontal navigation={navigation} data={tvshows?.latest} label={"Top Rated"}  type={"tv"}/>
+            {/* <MovieHorizontal navigation={navigation} data={tvshows?.action} label={"Action"} type={"tv"}/>
+            <MovieHorizontal navigation={navigation} data={tvshows?.horror} label={"Horror"} type={"tv"}/> */}
+            <MovieHorizontal navigation={navigation} data={tvshows?.romance} label={"Romance"} type={"tv"}/>
             </ScrollView>
         </View>
   )

@@ -29,9 +29,9 @@ const Search = ({navigation}) => {
         }
     }
 
-    const [search, setSearch] = React.useState("")
+    const [search, setSearch] = useState("")
     const [movies, setMovies] = useState([])
-    const [tvshows, setTvShows] = React.useState([])
+    const [tvshows, setTvShows] = useState([])
 
     async function getData() {
         const movie_discover = await fetch(`${api.tmdb_api}discover/movie?api_key=${api.api_key}&language=${userData?.language || 'en-US'}&page=1`)
@@ -46,12 +46,12 @@ const Search = ({navigation}) => {
     async function getSearch(data){
         if(data  != ""){
             const movie_search = await fetch(`${api.tmdb_api}search/movie?api_key=${api.api_key}&language=${userData?.language || 'en-US'}&query=${data}&page=1`)
-            data = await movie_search.json()
-            setMovies(data?.results ? data.results : [])
+            movie_data = await movie_search.json()
+            setMovies(movie_data?.results ? movie_data.results : [])
             ///////////////////////////////
             const tv_search = await fetch(`${api.tmdb_api}search/tv?api_key=${api.api_key}&language=${userData?.language || 'en-US'}&query=${data}&page=1`)
-            data = await tv_search.json()
-            setTvShows(data?.results ? data.results : [])
+            tv_data = await tv_search.json()
+            setTvShows(tv_data?.results ? tv_data.results : [])
         }else{
             getData()
         }

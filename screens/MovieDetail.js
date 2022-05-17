@@ -5,11 +5,8 @@ import {
     Text,
     BackHandler,
     Animated,
-    TouchableOpacity
 
 } from 'react-native';
-import ProgressBar from '../components/ProgressBar';
-import { Picker } from '@react-native-picker/picker';
 import {COLORS, api, SIZES, icons, FONTS} from '../constants';
 import TorrentStreamer from 'react-native-torrent-streamer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,12 +16,12 @@ import HeaderSection from '../components/HeaderSection';
 import CategoryAndRatings from '../components/CategoryAndRatings';
 import MovieDetails from '../components/MovieDetails';
 import MiniTitle from '../components/MiniTitle';
-import getfile from '../helper/getfile';
-
-//VIDEO PLAYERS
-import VideoPlayer from '../components/VideoPlayer';
+import MovieSelector from '../components/MovieSelector';
 import MovieGallery from '../components/MovieGallery';
 import ActorDetails from '../components/ActorsDetails';
+import ShowsSelector from '../components/ShowsSelector';
+//VIDEO PLAYERS
+import VideoPlayer from '../components/VideoPlayer';
 
 
 
@@ -33,7 +30,9 @@ const MovieDetail = ({navigation, route}) => {
     const { id, type } = route.params;
     const [userData, setUserData] = useState(null);
     const [movie, setMovie] = useState([]);
-    const [ytsData, setYtsData] = useState([])
+    const [torrentData, setTorrentData] = useState([])
+    const [numofSeason, setNumofSeason] = useState(0)
+    const scrollRef = useRef();
     const [streamUrl, setStreamUrl] = useState(null);
     const [buffer, setBuffer] = useState(0);
     const [downloadSpeed, setDownloadSpeed] = useState()
@@ -81,7 +80,7 @@ const MovieDetail = ({navigation, route}) => {
 
 
     async function getMovieData(id){
-        const action = await fetch(`${api.tmdb_api}${type}/${id}?api_key=${api.api_key}&language=${userData?.language || 'en-US'}`)
+        const action = await fetch(`${api.tmdb_api}${type}/${id}?api_key=${api.api_key}&language=${userData?.language || 'en-US'}&append_to_response=external_ids`)
         data = await action.json()
         setMovie(data)
         getTorrentData(data)
@@ -92,10 +91,17 @@ const MovieDetail = ({navigation, route}) => {
 
     const getTorrentData = async (data) => {
         try{
-            const ytstorrents = await fetch(`${api.yts_api}${data?.imdb_id}`)
-            response = await ytstorrents.json()
-            setYtsData(response.data.movie.torrents)
-            setUrl(response.data.movie.torrents[0].url)
+            const torrents = await fetch(`${api.popcorntime}${type == "movie" ? "movie" : "show"}/${data?.external_ids?.imdb_id}`)
+            response = await torrents.json()
+            console.log(data)
+            if(type == "movie"){
+                setTorrentData(response.torrents.en)
+                setUrl(response.torrents.en["720p"]?.url)
+            }else{
+                
+                setTorrentData(response.episodes)
+                setNumofSeason(response.num_seasons)
+            }
         }catch(e){
             getTorrentData(data)
         }
@@ -112,6 +118,10 @@ const MovieDetail = ({navigation, route}) => {
 
 
     function playMovie(url) {
+        scrollRef.current?.scrollTo({
+            y: 0,
+            animated: true,
+        });
         stream = {...stream, status: "Opening"}
         setIsPlaying(true)
         TorrentStreamer.start(url)
@@ -133,7 +143,8 @@ const MovieDetail = ({navigation, route}) => {
     
 
     function onError(e){
-        console.log("Error on Streamng: " + e)
+        stopMovie();
+        alert("Server Error: Change the quality or use VPN");
     }
 
     
@@ -183,6 +194,7 @@ const MovieDetail = ({navigation, route}) => {
                         : null
                       }
                       <Animated.ScrollView
+                            ref={scrollRef}
                             style={{flex: 1, flexDirection: 'column'}}
                             contentContainerStyle={{backgroundColor: COLORS.black}}
                       >
@@ -225,70 +237,12 @@ const MovieDetail = ({navigation, route}) => {
                                         }}
                                     >{movie?.overview}</Text>
                                 </View>
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        marginBottom: SIZES.radius
-                                    }}
-                                >
-                                    <View 
-                                        style={{
-                                            flex: 1,
-                                            borderRadius: 10,  
-                                            overflow: 'hidden',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            backgroundColor: COLORS.primary,
-                                            marginRight: SIZES.radius,
-                                        }}
-                                    >
-                                        <Picker
-                                            style={{
-                                                width: '100%',
-                                                height: 50,
-                                                borderRadius: 15,
-                                                backgroundColor: COLORS.primary,
-                                                color: COLORS.white,
-                                            }}
-                                            onValueChange={(value) => {
-                                                stopMovie()
-                                                setUrl(value)
-                                            }}
-                                            selectedValue={url ? url : 0}
-                                        >
-                                            <Picker.Item label="Select Quality" value="0" />
-                                            {
-                                                ytsData?.map((item, index) => {
-                                                    return <Picker.Item label={`${item.quality} (${item.size})`} value={item.url} key={index} />
-                                                })
-                                            }
-                                        </Picker>
-                                    </View>
-                                    <TouchableOpacity
-                                        style={{
-                                            height: 60,
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            marginBottom: Platform.OS == 'os' ? SIZES.padding * 2 : 0,
-                                            width: '50%',
-                                            borderRadius: 10,
-                                            backgroundColor: isPlaying && url ? COLORS.disabled : url ? COLORS.primary : COLORS.disabled,
-                                        }}
-                                        onPress={() => isPlaying && url ? stopMovie : url ? playMovie(url) : null}
-                                    >
-                                                <Text
-                                                    style={{
-                                                        color: url ? COLORS.white : COLORS.disabled,
-                                                        ...FONTS.h4
-                                                    }}
-                                                >{
-                                                    isPlaying && url ?
-                                                        "Stop"
-                                                    :   
-                                                        "Play"
-                                                    }</Text>
-                                    </TouchableOpacity>
-                                </View>
+                                {
+                                    type == "movie" ?
+                                    <MovieSelector torrentData={torrentData} stopMovie={stopMovie} setUrl={x => setUrl(x)} url={url} playMovie={x => playMovie(x)} isPlaying={isPlaying} />
+                                    :
+                                    <ShowsSelector torrentData={torrentData} numofSeason={numofSeason} stopMovie={stopMovie} setUrl={setUrl} url={url} playMovie={x => playMovie(x)} isPlaying={isPlaying} />
+                                }
                             </View>
 
 
