@@ -7,6 +7,7 @@ Watch and Download Free movies and TV Shows, HD movies directly on your mobile d
 
 * InApp Video Player
 * TMDB based Movie and TV Shows
+* TV Shows Support
 * Code Optimization
 * Free to Use
 * Open Source
@@ -19,7 +20,6 @@ Watch and Download Free movies and TV Shows, HD movies directly on your mobile d
 
 * Subtitle Support
 * Auto Play Next Video
-* TV Shows Support
 * Downloads Support
 * Background Download
 * Offline Mode
