@@ -22,6 +22,7 @@ import ActorDetails from '../components/ActorsDetails';
 import ShowsSelector from '../components/ShowsSelector';
 //VIDEO PLAYERS
 import VideoPlayer from '../components/VideoPlayer';
+import VideoPlayerv2 from '../components/VideoPlayerv2';
 
 
 
@@ -191,6 +192,7 @@ const MovieDetail = ({navigation, route}) => {
                       {
                         isPlaying  ?
                             <VideoPlayer posterUrl={`${api.backdrop_api.find(x => SIZES.width <= x.size).url}${movie?.backdrop_path}`} fileName={movie?.title || movie?.name} streamUrl={streamUrl} downloadProgress={downloadProgress} downloadSpeed={downloadSpeed} buffer={buffer} stopMovie={() => stopMovie()}/>
+                            // <VideoPlayerv2 uri={streamUrl} />
                         : null
                       }
                       <Animated.ScrollView

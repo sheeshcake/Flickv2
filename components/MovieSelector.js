@@ -1,9 +1,10 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Appearance } from 'react-native'
 import React from 'react'
 import {SIZES, COLORS, FONTS } from '../constants'
 import { Picker } from '@react-native-picker/picker'
 
-const MovieSelector = ({torrentData, stopMovie, setUrl, url, isPlaying}) => {
+const MovieSelector = ({torrentData, stopMovie, setUrl, url, isPlaying, playMovie}) => {
+    const colorScheme = Appearance.getColorScheme();
   return (
     <View
         style={{
@@ -36,10 +37,10 @@ const MovieSelector = ({torrentData, stopMovie, setUrl, url, isPlaying}) => {
                 }}
                 selectedValue={url ? url : 0}
             >
-                <Picker.Item label="Select Quality" value="0" />
+                <Picker.Item color={colorScheme == 'dark' ?'white' : 'black'} label="Select Quality" value="0" />
                 {
                     torrentData && Object.keys(torrentData).map((key) => {
-                        return <Picker.Item label={`${torrentData[key]["url"].toLowerCase().includes("cam") || torrentData[key]["url"].toLowerCase().includes("hdts") ? "CAM" : key == 0 ? "HD" : key} (${torrentData[key]["filesize"]})`} value={torrentData[key]["url"]} key={key} />
+                        return <Picker.Item color={colorScheme == 'dark' ?'white' : 'black'} label={`${torrentData[key]["url"].toLowerCase().includes("cam") || torrentData[key]["url"].toLowerCase().includes("hdts") ? "CAM" : key == 0 ? "HD" : key} (${torrentData[key]["filesize"]})`} value={torrentData[key]["url"]} key={key} />
                     })
                 }
             </Picker>

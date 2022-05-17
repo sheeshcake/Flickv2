@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Appearance } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import {SIZES, COLORS, FONTS } from '../constants'
 import { Picker } from '@react-native-picker/picker'
@@ -9,6 +9,7 @@ const ShowsSelector = ({torrentData, numofSeason, stopMovie, setUrl, url, isPlay
     const [selectedSeason, setSelectedSeason] = useState(0)
     const [selectedEpisodeNumber, setSelectedEpisodeNumber] = useState(0)
     const [selectedEpisode, setSelectedEpisode] = useState([])
+    const colorScheme = Appearance.getColorScheme();
 
     useEffect(() => {
         let temp = []
@@ -16,9 +17,9 @@ const ShowsSelector = ({torrentData, numofSeason, stopMovie, setUrl, url, isPlay
             temp[i] = torrentData.filter(x => x.season == i + 1).sort((a,b) => (a.episode > b.episode) ? 1 : ((b.episode > a.episode) ? -1 : 0))
         }
         setMovieData(temp)
-        // setSelectedEpisode(torrentData[selectedSeason]["torrents"])
-        console.log("Torrents", temp[selectedSeason])
-        // setSelectedEpisode(torrentData[selectedSeason][selectedEpisodeNumber]["torrents"] || null)
+        if(temp?.length > 0){
+            setSelectedEpisode(temp[selectedSeason][selectedEpisodeNumber])
+        }
     }, [torrentData, numofSeason])
 
   return (
@@ -53,10 +54,10 @@ const ShowsSelector = ({torrentData, numofSeason, stopMovie, setUrl, url, isPlay
                     }}
                     selectedValue={selectedSeason || 0}
                 >
-                    <Picker.Item label="Select Season" value="0" />
+                    <Picker.Item color={colorScheme == 'dark' ?'white' : 'black'} label="Select Season" value="0" />
                     {
                         movieData.map((data, index) => {
-                            return <Picker.Item label={`Season ${index + 1}`} value={index} key={`season${index}`} />
+                            return <Picker.Item color={colorScheme == 'dark' ?'white' : 'black'} label={`Season ${index + 1}`} value={index} key={`season${index}`} />
                         })
                     }
                 </Picker>
@@ -86,10 +87,10 @@ const ShowsSelector = ({torrentData, numofSeason, stopMovie, setUrl, url, isPlay
                     }}
                     selectedValue={selectedEpisodeNumber || 0}
                 >
-                    <Picker.Item label="Select Episode" value="0" />
+                    <Picker.Item color={colorScheme == 'dark' ?'white' : 'black'} label="Select Episode" value="0" />
                     {
                         movieData[selectedSeason] && movieData[selectedSeason].map((data, index) => {
-                            return <Picker.Item label={`Episode ${data.episode}`} value={index} key={`episode${data.episode}`} />
+                            return <Picker.Item color={colorScheme == 'dark' ?'white' : 'black'} label={`Episode ${data.episode}`} value={index} key={`episode${data.episode}`} />
                         })
                     }
                 </Picker>
@@ -126,10 +127,10 @@ const ShowsSelector = ({torrentData, numofSeason, stopMovie, setUrl, url, isPlay
                     }}
                     selectedValue={url ? url : 0}
                 >
-                    <Picker.Item label="Select Quality" value="0" />
+                    <Picker.Item color={colorScheme == 'dark' ?'white' : 'black'} label="Select Quality" value="0" />
                     {
                         selectedEpisode["torrents"] && Object.keys(selectedEpisode["torrents"]).map((key) => {
-                            return <Picker.Item label={`${key}`} value={selectedEpisode["torrents"][key]["url"]} key={key} />
+                            return <Picker.Item color={colorScheme == 'dark' ?'white' : 'black'} label={`${key == "0" ? "HD" : key}`} value={selectedEpisode["torrents"][key]["url"]} key={key} />
                         })
                     }
                 </Picker>
